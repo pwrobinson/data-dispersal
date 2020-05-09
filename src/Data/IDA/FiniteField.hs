@@ -1,19 +1,19 @@
-{-# LANGUAGE DeriveDataTypeable, DeriveGeneric, GeneralizedNewtypeDeriving, TemplateHaskell, Haskell2010, TypeFamilies, FlexibleContexts, Trustworthy, FlexibleInstances, TypeSynonymInstances, OverlappingInstances, UndecidableInstances #-}
+{-# LANGUAGE DataKinds, DeriveDataTypeable, DeriveGeneric, GeneralizedNewtypeDeriving, TemplateHaskell, Haskell2010, TypeFamilies, FlexibleContexts, Trustworthy, FlexibleInstances, TypeSynonymInstances, OverlappingInstances, UndecidableInstances #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Data.IDA.FiniteField
 -- Copyright   :  Peter Robinson 2014
 -- License     :  LGPL
--- 
+--
 -- Maintainer  :  Peter Robinson <peter.robinson@monoid.at>
 -- Stability   :  experimental
 -- Portability :  portable
--- 
--- Linear algebra computations in a finite prime field. 
--- 
+--
+-- Linear algebra computations in a finite prime field.
+--
 -----------------------------------------------------------------------------
 
-module Data.IDA.FiniteField 
+module Data.IDA.FiniteField
 where
 
 import Control.Exception
@@ -37,16 +37,19 @@ newtype FField = FField { number :: $(PF.primeField $ fromIntegral 1021) }
 instance Show FField where
   show = show . PF.toInteger . number
 
-instance Monoid FField where  
+instance Semigroup FField where
+  (<>) = (+)
+
+instance Monoid FField where
   mempty = 0
   mappend  = (+)
 
 instance Enum FField where
-  toEnum =  FField . fromIntegral 
+  toEnum =  FField . fromIntegral
   fromEnum = fromEnum . PF.toInteger . number
 
 instance Binary FField where
-  get = do 
+  get = do
     n <- get :: Get Integer
     return $ FField { number = fromInteger n }
   put f = put (PF.toInteger $ number f)
@@ -58,7 +61,7 @@ prime = fromInteger $ order (0 :: FField)
 
 
 -- | A matrix over the finite field.
-type FMatrix = Matrix FField 
+type FMatrix = Matrix FField
 
 
 dotProduct :: Num a => Vector a -> Vector a -> a
@@ -69,22 +72,22 @@ dotProduct v1 v2 = V.sum $ V.zipWith (*) v1 v2
 -- forward substitution.
 forwardSub :: Fractional a => Matrix a -> Vector a -> Vector a
 forwardSub =
-  forwardSub' (V.empty) 
+  forwardSub' (V.empty)
   where
-    forwardSub' xV lower bV 
+    forwardSub' xV lower bV
       | nrows lower == 0 = xV
-      | otherwise = 
-        let curRow = getRow 1 lower 
+      | otherwise =
+        let curRow = getRow 1 lower
             offset = V.length xV
             lm   =  getRow 1 lower V.! offset
-            curB = V.head bV  
+            curB = V.head bV
             negSum = curRow `dotProduct` xV
             curX = (curB - negSum) / lm
         in
         forwardSub' (V.snoc xV curX)
-                    (submatrix 2 (nrows lower) 1 (ncols lower) lower) 
-                    (V.tail bV) 
-                    
+                    (submatrix 2 (nrows lower) 1 (ncols lower) lower)
+                    (V.tail bV)
+
 
 
 -- | Solves a linear equality system @A x = b@ given by an upper triangular matrix via
@@ -93,38 +96,38 @@ backwardSub :: Fractional a => Matrix a -> Vector a -> Vector a
 backwardSub upper bV =
   backwardSub' upper bV V.empty (nrows upper)
   where
-    backwardSub' upper bV xV i 
+    backwardSub' upper bV xV i
       | nrows upper == 0 = xV
       | i<=0             = xV
-      | otherwise = 
-        let curRow = snd $ V.splitAt i $ getRow i upper 
+      | otherwise =
+        let curRow = snd $ V.splitAt i $ getRow i upper
             lm   =  (getRow i upper) V.! (i-1)
             curB  = bV V.! (i-1)
             negSum = xV `dotProduct` curRow
             curX = (curB - negSum) / lm
         in
         backwardSub' upper bV (curX `V.cons` xV) (i-1)
-          
+
 -- | Compute the inverse of  matrix. Throws 'AssertionFailed' if the matrix is
--- not invertible. 
+-- not invertible.
 inverse :: (Ord a,Fractional a) => Matrix a -> Matrix a
-inverse mat = 
+inverse mat =
   let mInv = luDecomp mat
-  in 
-  case mInv of 
+  in
+  case mInv of
     Nothing -> throw $ AssertionFailed "inverse: matrix is not invertible!"
-    Just (upper,lower,pmatrix,_) -> 
+    Just (upper,lower,pmatrix,_) ->
       let m = nrows mat
           bVecs = [ getCol i (identity m) | i <- [1..m] ]
           columnsOfInverse = flip map bVecs $ \bV ->
             let yV = forwardSub lower (getCol 1 $ pmatrix * colVector bV)
                 xV = backwardSub upper yV
             in colVector xV
-      in 
+      in
       foldr (<|>) (fromLists [[]]) columnsOfInverse
 
-  
--- | Construct a Vandermonde matrix. The i-th list element is the i-th seed of 
+
+-- | Construct a Vandermonde matrix. The i-th list element is the i-th seed of
 -- the geometric progression of the i-th row.
 vandermonde :: Int -> [FField] -> FMatrix
 vandermonde m is = matrix (length is) m $ \(i,j) -> (fromIntegral i)^(fromIntegral $ j-1)
@@ -132,5 +135,3 @@ vandermonde m is = matrix (length is) m $ \(i,j) -> (fromIntegral i)^(fromIntegr
 -- | Create an nxm Vandermonde matrix. /O(n m)/.
 vmatrix :: Int -> Int -> FMatrix
 vmatrix numFragments m = vandermonde m [1..fromIntegral numFragments]
-
-
