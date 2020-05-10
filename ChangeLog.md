@@ -4,7 +4,9 @@
 
 * None
 
-## 1.0.1.1
+## 1.0.0.4
 
-* Make it build with `stack`.
-* Updated dependencies.
+* Added `package.yaml` and updated dependencies.
+* Fixed bug in how `submatrix` was called in `forwardSub`.
+* Removed old maintainer note.
+* Updated documentation

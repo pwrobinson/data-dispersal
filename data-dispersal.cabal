@@ -1,0 +1,81 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 47367640c7af678fabd220cbcfe3cda47e5be90f8b5fe735136bee06eef8b260
+
+name:           data-dispersal
+version:        1.0.0.3
+synopsis:       Disperse your data efficiently and securely!
+description:    More information can be found here <https://blog.lowerbound.io/2020-05-10_Data_dispersal_in_Haskell.html>
+category:       Data, Cryptography
+homepage:       https://github.com/pwrobinson/data-dispersal#readme
+bug-reports:    https://github.com/pwrobinson/data-dispersal/issues
+author:         Peter Robinson
+maintainer:     pwr@lowerbound.io
+copyright:      2014-2020 Peter Robinson
+license:        LGPL-2.1
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/pwrobinson/data-dispersal
+
+library
+  exposed-modules:
+      Crypto.IDA
+      Data.IDA
+      Data.IDA.FiniteField
+      Data.IDA.Internal
+  other-modules:
+      Paths_data_dispersal
+  hs-source-dirs:
+      src
+  build-depends:
+      AES >=0.2.9
+    , array >=0.4.0.1
+    , base >=4.6 && <5
+    , binary >=0.5.1.1
+    , bytestring >=0.10.0.2
+    , entropy >=0.3.2
+    , finite-field >=0.8.0
+    , matrix >=0.3.4.0
+    , secret-sharing >=1.0.0.0
+    , syb >=0.4.0
+    , vector >=0.10.11.0
+  default-language: Haskell2010
+
+test-suite data-dispersal-test
+  type: exitcode-stdio-1.0
+  main-is: Tests.hs
+  other-modules:
+      Crypto.IDA
+      Data.IDA
+      Data.IDA.FiniteField
+      Data.IDA.Internal
+      Paths_data_dispersal
+  hs-source-dirs:
+      tests
+      src
+  build-depends:
+      AES >=0.2.9
+    , QuickCheck >=2.4
+    , array >=0.4.0.1
+    , base >=4 && <5
+    , binary >=0.7.2.1
+    , bytestring >=0.10.0.2
+    , entropy >=0.3.2
+    , finite-field >=0.8.0
+    , matrix >=0.3.4.0
+    , secret-sharing >=1.0.0.0
+    , spool >=0.1
+    , syb >=0.4.0
+    , test-framework >=0.4.1
+    , test-framework-quickcheck2
+    , vector >=0.10.11.0
+  default-language: Haskell2010

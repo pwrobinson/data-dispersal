@@ -18,35 +18,34 @@ instance Arbitrary BL.ByteString where
     arbitrary   = fmap BL.pack arbitrary
 
 main :: IO ()
-main = do 
+main = do
   defaultMainWithOpts
        [ testProperty "IDAencodingDecoding" propIDAEncodingDecoding
        , testProperty "SecretIDAencodingDecoding" propSecretIDAEncodingDecoding
-       ] mempty  
+       ] mempty
 
-        
+
 
 -- | Input: bytestring b, list of booleans.
--- First, encode b, then randomly select sufficiently many fragments according to
--- the boolean list, finally decode these fragments and check if the original
+-- First, encode b and randomly select sufficiently many fragments according to
+-- the boolean list. Then, decode these fragments and check if the original
 -- bytestring is matched.
-propIDAEncodingDecoding bstr blist = 
+propIDAEncodingDecoding bstr blist =
   let frags = IDA.encode 10 40 bstr in
   let chosen = fst $ unzip $ filter snd $ zip frags blist in
-  if length chosen < 10 
+  if length chosen < 10
     then True
-    else bstr == IDA.decode chosen 
+    else bstr == IDA.decode chosen
 
 
 -- | Input: bytestring b, list of booleans.
--- First, encode b, then randomly select sufficiently many fragments according to
--- the boolean list, finally decode these fragments and check if the original
+-- First, encode and encrypt b. Then, randomly select sufficiently many fragments according to
+-- the boolean list. Finally decrypt and decode these fragments and check if the original
 -- bytestring is matched.
 propSecretIDAEncodingDecoding bstr blist = ioProperty $ do
-  frags <- SecretIDA.encode 5 30 Nothing bstr
-  let chosen = fst $ unzip $ filter snd $ zip frags blist 
-  if length chosen < 5 
+  frags <- SecretIDA.encode 5 30 bstr
+  let chosen = fst $ unzip $ filter snd $ zip frags blist
+  if length chosen < 5
     then return True
-    else 
+    else
       return $ bstr == SecretIDA.decode chosen
-

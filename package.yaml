@@ -1,0 +1,52 @@
+name:                data-dispersal
+version:             1.0.0.4
+github:              "pwrobinson/data-dispersal"
+license:             LGPL-2.1
+author:              "Peter Robinson"
+maintainer:          "peter@lowerbound.io"
+copyright:           "2014-2020 Peter Robinson"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+synopsis:            Split your data efficiently and securely!
+category:            Data, Cryptography
+
+description:         More information and a usage example can be found here <https://blog.lowerbound.io/2020-05-10_Data_dispersal_in_Haskell.html>
+
+
+dependencies:
+- base >=4.6 && < 5
+- array >= 0.4.0.1
+- vector >= 0.10.11.0
+- binary >= 0.7.2.1
+- bytestring >= 0.10.0.2
+- syb >= 0.4.0
+- binary >= 0.5.1.1
+- finite-field >= 0.8.0
+- matrix >= 0.3.4.0
+- AES >= 0.2.9
+- entropy >= 0.3.2
+- secret-sharing >= 1.0.0.0
+
+library:
+  source-dirs: src
+
+tests:
+  data-dispersal-test:
+    main:   Tests.hs
+    source-dirs:
+      - tests
+      - src
+    dependencies:
+      - base >= 4 && < 5
+      - QuickCheck >= 2.4
+      - test-framework >= 0.4.1
+      - test-framework-quickcheck2
+      - array >= 0.4.0.1
+      - vector >= 0.10.11.0
+      - spool >= 0.1
+      - binary >= 0.7.2.1
+      - bytestring >= 0.10.0.2
+      - syb >= 0.4.0

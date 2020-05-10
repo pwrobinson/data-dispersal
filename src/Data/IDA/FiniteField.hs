@@ -1,11 +1,10 @@
-{-# LANGUAGE DataKinds, DeriveDataTypeable, DeriveGeneric, GeneralizedNewtypeDeriving, TemplateHaskell, Haskell2010, TypeFamilies, FlexibleContexts, Trustworthy, FlexibleInstances, TypeSynonymInstances, OverlappingInstances, UndecidableInstances #-}
+{-# LANGUAGE DataKinds, DeriveDataTypeable, DeriveGeneric, GeneralizedNewtypeDeriving, TemplateHaskell, Haskell2010, TypeFamilies, FlexibleContexts, Trustworthy, FlexibleInstances, TypeSynonymInstances, UndecidableInstances #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Data.IDA.FiniteField
 -- Copyright   :  Peter Robinson 2014
 -- License     :  LGPL
 --
--- Maintainer  :  Peter Robinson <peter.robinson@monoid.at>
 -- Stability   :  experimental
 -- Portability :  portable
 --
@@ -72,21 +71,21 @@ dotProduct v1 v2 = V.sum $ V.zipWith (*) v1 v2
 -- forward substitution.
 forwardSub :: Fractional a => Matrix a -> Vector a -> Vector a
 forwardSub =
-  forwardSub' (V.empty)
+  forwardSub' V.empty
   where
-    forwardSub' xV lower bV
-      | nrows lower == 0 = xV
-      | otherwise =
+    forwardSub' xV lower bV =
         let curRow = getRow 1 lower
             offset = V.length xV
-            lm   =  getRow 1 lower V.! offset
+            lm =  getRow 1 lower V.! offset
             curB = V.head bV
             negSum = curRow `dotProduct` xV
             curX = (curB - negSum) / lm
+            xV' = V.snoc xV curX
         in
-        forwardSub' (V.snoc xV curX)
-                    (submatrix 2 (nrows lower) 1 (ncols lower) lower)
-                    (V.tail bV)
+        if nrows lower <= 1
+          then xV'
+          else forwardSub' xV' (submatrix 2 (nrows lower) 1 (ncols lower) lower)
+                               (V.tail bV)
 
 
 
