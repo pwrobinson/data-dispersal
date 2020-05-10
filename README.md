@@ -29,7 +29,7 @@ The following is a simple example. That is, we split a ByteString into 15 fragme
 "my really important data"
 ~~~
 
-## With Information-Theoretic Security
+## Combined with Secret Sharing 
 
 ~~~ {.haskell}
 ❯ :m + Crypto.IDA
