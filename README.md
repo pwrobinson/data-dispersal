@@ -1,3 +1,9 @@
+# More Information
+
+For detailed usage examples, complexity bounds, and more information see
+[Information Dispersal and Secret Sharing in Haskell](https://blog.lowerbound.io/2020-05-10_Data_dispersal_in_Haskell.html)
+
+
 # GHCi Example
 
 The following is a simple example. That is, we split a ByteString into 15 fragments such that any 5 of them are sufficient to recover the original data. In the first example we don't use encryption, so another party may gain some knowledge of our data if they get their hands on some fragments.
@@ -44,7 +50,3 @@ The following is a simple example. That is, we split a ByteString into 15 fragme
 ~~~
 
 
-# More Information
-
-For detailed usage examples and more information see
-[Information Dispersal and Secret Sharing in Haskell](https://blog.lowerbound.io/2020-05-10_Data_dispersal_in_Haskell.html)
